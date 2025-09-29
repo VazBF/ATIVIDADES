@@ -1,0 +1,4 @@
+br\com\sistemavotacao\client\VotingClient.class
+br\com\sistemavotacao\server\ServerAdminConsole.class
+br\com\sistemavotacao\server\VotingServer.class
+br\com\sistemavotacao\server\ClientHandler.class
