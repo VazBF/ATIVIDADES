@@ -8,8 +8,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 /**
- * Classe principal do Cliente de Votação.
- *
+ * Classe do Cliente de Votação.
  * Responsabilidades:
  * 1. Conectar-se ao servidor de votação.
  * 2. Apresentar uma interface de usuário no console.
@@ -23,15 +22,24 @@ public class VotingClient {
     private static final int SERVER_PORT = 12345;
 
     public static void main(String[] args) {
-        try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             Scanner scanner = new Scanner(System.in)) {
+        try (
+                Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                Scanner scanner = new Scanner(System.in)) {
 
             System.out.println("Conectado ao servidor de votação.");
 
+            // ---- ALTERAÇÃO INSERIDA AQUI ----
+            // 1. Pede o nome do usuário primeiro
+            System.out.print("Para começar, digite seu primeiro nome: ");
+            String clientName = scanner.nextLine();
+            
+            // 2. Envia o nome para o servidor para identificação
+            out.println("IDENTIFY:" + clientName);
+            // ------------------------------------
+
             // Thread para ouvir mensagens do servidor de forma assíncrona (confirmações, status)
-            // Isso é útil principalmente para o modo async, mas pode receber outras notificações.
             Thread serverListener = new Thread(() -> {
                 try {
                     String serverResponse;
@@ -45,9 +53,8 @@ public class VotingClient {
             });
             serverListener.start();
 
-
             while (true) {
-                printMenu();
+                printMenu(clientName); // Passa o nome para o menu
                 String choice = scanner.nextLine();
 
                 if ("3".equals(choice)) {
@@ -73,7 +80,7 @@ public class VotingClient {
                         System.out.println("Opção inválida.");
                         break;
                 }
-                
+
                 // Pequena pausa para a resposta chegar
                 Thread.sleep(500);
             }
@@ -87,8 +94,8 @@ public class VotingClient {
         System.out.println("Encerrando cliente.");
     }
 
-    private static void printMenu() {
-        System.out.println("\n--- Sistema de Votação ---");
+    private static void printMenu(String name) {
+        System.out.println("\n--- Sistema de Votação (Olá, " + name + "!) ---");
         System.out.println("1. Votar (Modo Síncrono)");
         System.out.println("2. Votar (Modo Assíncrono)");
         System.out.println("3. Sair");

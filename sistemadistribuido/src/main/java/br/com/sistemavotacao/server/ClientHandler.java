@@ -21,6 +21,7 @@ public class ClientHandler implements Runnable {
     private final VotingServer server;
     private PrintWriter out;
     private BufferedReader in;
+    private String clientName = "Anônimo"; // Nome padrão caso a identificação falhe
 
     public ClientHandler(Socket socket, VotingServer server) {
         this.clientSocket = socket;
@@ -33,13 +34,25 @@ public class ClientHandler implements Runnable {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
+            // 1. A primeira mensagem DEVE ser a de identificação do cliente
+            String identificationMessage = in.readLine();
+            if (identificationMessage != null && identificationMessage.startsWith("IDENTIFY:")) {
+                this.clientName = identificationMessage.split(":")[1];
+            }
+            
+            // 2. Anuncia a conexão no console do servidor usando o nome recebido
+            System.out.println("Novo cliente conectado: '" + this.clientName + "' (" + clientSocket.getInetAddress().getHostAddress() + ")");
+
+            // 3. Inicia o loop para processar os comandos de votação
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                System.out.println("Mensagem recebida de " + clientSocket.getInetAddress().getHostAddress() + ": " + inputLine);
+                // Usa o nome do cliente no log de mensagens
+                System.out.println("Mensagem recebida de '" + this.clientName + "': " + inputLine);
                 processMessage(inputLine);
             }
         } catch (IOException e) {
-            System.out.println("Cliente " + clientSocket.getInetAddress().getHostAddress() + " desconectado.");
+            // Usa o nome do cliente na mensagem de desconexão
+            System.out.println("Cliente '" + this.clientName + "' ("+ clientSocket.getInetAddress().getHostAddress() + ") desconectado.");
         } finally {
             try {
                 if (in != null) in.close();

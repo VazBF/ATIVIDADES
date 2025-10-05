@@ -51,7 +51,9 @@ public class VotingServer {
             while (true) {
                 // Aceita uma nova conexão de cliente
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Novo cliente conectado: " + clientSocket.getInetAddress().getHostAddress());
+                
+                // A mensagem "Novo cliente conectado" foi MOVIDA para o ClientHandler
+                // para que possa incluir o nome do cliente.
                 
                 // Cria um novo manipulador para o cliente e o submete ao pool de threads
                 clientPool.execute(new ClientHandler(clientSocket, this));
