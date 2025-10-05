@@ -73,3 +73,5 @@ Em um novo terminal, execute o comando abaixo para iniciar um cliente. Você pod
 ```diff
 java -cp target/votacao-distribuida-1.0-SNAPSHOT.jar br.com.sistemavotacao.client.VotingClient
 ```
+
+ALUNOS: Arthur Renato Normando Vasconcelos, Bruno Vaz Ferreira
